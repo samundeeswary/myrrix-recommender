@@ -1,0 +1,270 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<title>Myrrix Changes and Release Notes</title>
+<style type="text/css">
+body {background-color:#202020}
+body,p,h1,h2,h3 {font-family:Gill Sans,Helvetica,sans-serif;font-weight:300;color:white}
+h1,h2,h3,a {color:#CCFF66}
+h1,h2,h3 {text-transform:uppercase}
+hr {margin:20px 0 10px 0}
+</style>
+</head>
+<body>
+
+<h1>Version 0.9</h1>
+
+<p>December 31 2012</p>
+
+<h2>New Features</h2>
+
+<ul>
+  <li>Serving Layer can now run in read-only mode to serve a model but not accept updates</li>
+  <li><code>/ingest</code> endpoint can now accept web-browser-style file uploads</li>
+  <li>New unified license system is in place. Obtain a trial license from
+    <a href="http://myrrix.com">myrrix.com</a></li>
+</ul>
+
+<h2>Fixes</h2>
+
+<ul>
+  <li>Standalone Serving Layer .war file deployment works again</li>
+  <li>HTTP DIGEST authentication is now made compatible with all clients and the latest Tomcat again</li>
+  <li>Choice of partition and replica is now deterministic in the client. This avoids problems where two
+    replicas presented slightly different results to the client on successive requests.</li>
+  <li>Removed "_LOCK" file mechanism in Computation Layer in favor of querying the live cluster state</li>
+  <li>Stand-alone serving layer avoids a possible exception when recomputing a new model on new items</li>
+  <li>Several fixes for problems in computing models over very small input</li>
+  <li>Repeated updates from new users and items should not be able to produce extreme values in the model
+    now even after many updates</li>
+  <li>Java client library now supports rescorer parameters</li>
+  <li>Added missing <code>recommendToMany</code> to client CLI, changed some APIs to be more consistent,
+    and fixed other small issues in the CLI.</li>
+</ul>
+
+<h2>Other</h2>
+
+<ul>
+  <li>Faster display of self-organizing map visualization for moderate to large data sets.</li>
+  <li>Client command line has changed slightly, to take optional argument like "howMany" as a flag
+    (e.g. <code>--howMany 5</code> instead of stand-alone argument</li>
+  <li><code>mostSimilarItems</code> and <code>recommendToAnonymous</code> will return a result if
+    at least one argument item exists, rather than if all exist</li>
+  <li>Update to support Hadoop 1.1.1 and latest Amazon EMR releases</li>
+</ul>
+
+<h1>Version 0.8</h1>
+
+<p>November 16 2012</p>
+
+<h2>New Features</h2>
+
+<ul>
+  <li>Serving Layer console now provides a visualization of users and items in feature space as a self-organizing map.</li>
+  <li>Partitions may be specified as <code>auto</code> in the Java client, to automatically discover partitions.</li>
+  <li>Serving Layers may automatically discover partition information, when run on Amazon EC2.</li>
+  <li>Instance IDs can now be any string, instead of strictly numeric.</li>
+  <li><code>recommendToAnonymous</code> method now supports rescoring.</li>
+</ul>
+
+<h2>Fixes</h2>
+
+<ul>
+  <li>New users and items should no longer be able to become temporarily unavailable when a new model loads</li>
+  <li>Forced shutdown (with Ctrl-C, <code>kill</code>) should initiate orderly shutdown and sync
+    data to S3 / HDFS</li>
+  <li>Corrected output format from --recommend and --itemSimilarity in Computation Layer</li>
+  <li>Fixed a bug wherein the Computation Layer could drop a small number of users' data</li>
+  <li><code>AllItemSimilarities</code> now correctly uses item IDs from model</li>
+  <li>It is now possible to specify an SSL keystore file and JAR file containing a RescorerProvider to the
+    Serving Layer, when run on Amazon AWS.</li>
+  <li>Normalized Discounted Cumulative Gain evaluation metric uses a corrected formula</li>
+  <li>More efficient LSH implementation which allows performance-accuracy tradeoff at smaller (more reasonable)
+    data sizes.</li>
+</ul>
+
+<h2>Other</h2>
+
+<ul>
+  <li>Optimizations in Computation Layer for lower Hadoop latency and overhead</li>
+  <li>Now can control the number of writes between rebuild in stand-alone Serving Layer mode with property
+    <code>model.local.writesBetweenRebuild</code></li>
+  <li><code>estimate</code> method now returns 0 for unknown users and items rather than an exception.</li>
+  <li>Computation Layer supports Hadoop 1.1.x</li>
+  <li>Computation Layer has minor changes now to operate with Hadoop 2.x, but still requires "MRv1" mode.</li>
+</ul>
+
+<h1>Version 0.7</h1>
+
+<p>October 08 2012</p>
+
+<h2>New Features</h2>
+
+<ul>
+  <li>Computation Layer functionality from PeriodicRunner and GenerationRunner has been merged, and now
+    adds a web-based console</li>
+  <li>Experimental feature in Computation Layer to decay importance of old data over time.</li>
+  <li>New example shell scripts for more convenient execution of Serving Layer, Computation Layer</li>
+</ul>
+
+<h2>Fixed</h2>
+
+<ul>
+  <li>Resolved an exception on startup on the stand-alone Serving Layer when no data is present.</li>
+</ul>
+
+<h2>Other</h2>
+
+<ul>
+  <li>Serving Layer can reload new models incrementally, reducing peak heap size required.</li>
+  <li>ALS algorithm has been modified to handle negative strength values more reasonably at model building time,
+      though input should still generally be positive.</li>
+  <li>Fold-in less aggressively emphasizes new input's effect</li>
+  <li>Updated to Tomcat 7.0.30, SLF4J 1.7</li>
+</ul>
+
+<h1>Version 0.6</h1>
+
+<p>September 3 2012</p>
+
+<h2>New Features</h2>
+
+<ul>
+  <li>Added <code>getAllUserIDs</code> and <code>getAllItemIDs</code> API methods</li>
+  <li>Serving Layer contains new command-line programs, <code>AllRecommendations</code> and
+  <code>AllItemSimilarities</code>, which will recommendations for all users / similar items for all items,
+  respectively, in bulk. This may be useful to create a simple batch recommendation process when that is
+  all that's needed.</li>
+  <li>Serving Layer console has simple online quality estimate: average estimation error</li>
+  <li>New optional parameter can suppress loading of known items, saving memory but meaning any item
+  may be recommended, even ones existing in the input already for a user</li>
+  <li>New <code>PeriodicRunner</code> in Computation Layer for continuous execution</li>
+  <li>Computation Layer has experimental feature to merge models from other instances</li>
+</ul>
+
+<h2>Other</h2>
+
+<ul>
+  <li>Better parallelization and performance in Computation Layer recommend and similar item computations</li>
+  <li>Improved evaluation framework, including AUC and precision/recall test</li>
+  <li>Java client: <code>--translate</code> command line flag has become <code>--translateUser</code> and
+    <code>--translateItem</code></li>
+  <li>Update to Guava 13</li>
+</ul>
+
+<h1>Version 0.5</h1>
+
+<p>July 9 2012</p>
+
+<h2>New Features</h2>
+
+<ul>
+  <li>Log output now available on Serving Layer console</li>
+  <li><code>/ready</code> endpoint in Serving Layer tells whether it is ready to answer requests</li>
+  <li><code>removePreference</code> now exposed in the REST API</li>
+</ul>
+
+<h2>Fixes</h2>
+
+<ul>
+  <li>Java client can now upload files to ingest when HTTP DIGEST authentication is enabled</li>
+  <li>Java client and Serving Layer now use compression when receiving data to ingest</li>
+  <li><code>removePreference</code> behavior is now more correct (e.g. doesn't accept <code>NaN</code>,
+    recorded correctly by the Serving Layer) and rational (removed problematic 'value' parameter).</li>
+</ul>
+
+<h2>Other</h2>
+
+<ul>
+  <li>Radically faster model building in Serving Layer standalone mode -- usually minutes instead of hours now.</li>
+  <li>Computation Layer iterations are ~40% faster as three MapReduce jobs have been merged into one</li>
+  <li>Computation Layer workers no longer have to load the feature matrix into memory, and can deal with
+    feature matrices that don't fit in memory (at a performance cost).</li>
+  <li>Update to Tomcat 7.0.29</li>
+</ul>
+
+<h1>Version 0.4</h1>
+
+<p>June 10 2012</p>
+
+<h2>New Features</h2>
+
+<ul>
+  <li>Serving Layer may now be built as a WAR file for deployment in a servlet container.</li>
+  <li>Rescorer can now accept run-time arguments via URL parameter <code>rescorerParams=</code></li>
+  <li>Console page now supports ingest, setting pref, etc. -- all API methods</li>
+</ul>
+
+<h2>Other</h2>
+
+<ul>
+  <li>Minor improvements to ALS convergence</li>
+  <li>Computation Layer is now available, separately</li>
+  <li>Serving Layer and Java Client are available from Subversion repository on Google Code</li>
+</ul>
+
+<h1>Version 0.3</h1>
+
+<p>May 7 2012</p>
+
+<h2>New Features</h2>
+
+<ul>
+  <li>Now supports rescoring logic for recommend() and mostSimilarItems(). These are available in ServerRecommender
+    and also may be added to a Serving Layer instance by setting --rescorerProviderClass to an implementation
+    class which provides rescoring objects.</li>
+  <li>recommend() can now consider known items as candidates for recommendation, if desired</li>
+</ul>
+
+<h2>Fixes</h2>
+
+<ul>
+  <li>Java client was not able to configure SSL key or auth credentials in some cases.</li>
+</ul>
+
+<h2>Other</h2>
+
+<ul>
+  <li>Update to Guava 12.0</li>
+</ul>
+
+
+<h1>Version 0.2</h1>
+
+<p>April 23 2012</p>
+
+<h2>New Features</h2>
+
+<ul>
+  <li>Alternating-least-squares computation is now seeded with output of previous run, if available,
+    for faster model convergence</li>
+  <li>Added new estimatePreference() method and REST API method that can compute multiple estimates
+    in one call.</li>
+  <li>Now contains Ant build script for building the distributed code.</li>
+</ul>
+
+<h2>Fixes</h2>
+
+<ul>
+  <li>Java client result for <code>recommendToAnonymous</code> and <code>mostSimilarItems</code>
+    were swapped.</li>
+  <li>Several minor bug fixes.</li>
+</ul>
+
+<h2>Other</h2>
+
+<ul>
+  <li>Update to Apache Tomcat 7.0.27</li>
+  <li>Update to Apache Commons Math 3.0</li>
+</ul>
+
+<hr/>
+
+<h1>Version 0.1</h1>
+
+<p>April 3 2012</p>
+
+<p>Initial release.</p>
+
+</body>
+</html>
