@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+ Copyright Myrrix Ltd
+
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+
+      http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+ -->
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+  <parent>
+    <groupId>net.myrrix</groupId>
+    <artifactId>myrrix</artifactId>
+    <version>1.0.0</version>
+  </parent>
+
+  <modelVersion>4.0.0</modelVersion>
+  <artifactId>myrrix-web-war</artifactId>
+  <packaging>war</packaging>
+  <name>Myrrix Web (WAR)</name>
+  <version>1.0.0</version>
+  <description>Web application source code from Serving Layer standalone mode (WAR packaging)</description>
+  <url>http://myrrix.com/documentation-serving-layer/</url>
+  <scm>
+    <url>http://myrrix-recommender.googlecode.com/svn/tags/myrrix-1.0.0/web-war</url>
+    <connection>scm:svn:http://myrrix-recommender.googlecode.com/svn/tags/myrrix-1.0.0/web-war</connection>
+    <developerConnection>scm:svn:https://myrrix-recommender.googlecode.com/svn/tags/myrrix-1.0.0/web-war</developerConnection>
+  </scm>
+
+  <dependencies>
+    <dependency>
+      <groupId>net.myrrix</groupId>
+      <artifactId>myrrix-web-common</artifactId>
+      <version>1.0.0</version>
+    </dependency>
+    <dependency>
+      <groupId>net.myrrix</groupId>
+      <artifactId>myrrix-online-local</artifactId>
+      <version>1.0.0</version>
+      <scope>runtime</scope>
+    </dependency>
+  </dependencies>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-war-plugin</artifactId>
+        <version>2.3</version>
+        <configuration>
+          <warName>myrrix-serving-${project.version}</warName>
+          <webResources>
+            <resource>
+              <directory>../web-common/docs</directory>
+              <excludes>
+                <exclude>WEB-INF/web.xml</exclude>
+              </excludes>
+            </resource>
+          </webResources>
+          <webXml>../web-common/docs/WEB-INF/web.xml</webXml>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+
+</project>

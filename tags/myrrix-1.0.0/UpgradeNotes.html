@@ -1,0 +1,97 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<title>Myrrix Upgrade Notes</title>
+<style type="text/css">
+body {background-color:#202020}
+body,p,h1,h2,h3 {font-family:Gill Sans,Helvetica,sans-serif;font-weight:300;color:white}
+h1,h2,h3,a {color:#CCFF66}
+h1,h2,h3 {text-transform:uppercase}
+hr {margin:20px 0 10px 0}
+</style>
+</head>
+<body>
+
+<h1>Myrrix Upgrade Notes</h1>
+
+<h2>Version 1.0.0</h2>
+
+<h3>All</h3>
+
+<ul>
+  <li>A license file is no longer required. Do not set <code>--licenseFile</code> on the command line.</li>
+</ul>
+
+<h2>Version 1.0.0 beta 1</h2>
+
+<h3>Serving Layer</h3>
+
+<ul>
+  <li>The endpoint for <code>setItemTag</code> was declared incorrectly. Requests should access
+  <code>/tag/item/<strong>[itemID]/[tag]</strong></code>, not 
+  <code>/tag/item/<strong>[tag]/[itemID]</strong></code>. Callers who access the REST API directly
+  will need to use the corrected path.</li>
+  <li>Stand-alone: the format of <code>model.bin.gz</code> has changed in a backwards-incompatible way.
+  Remove it and let the server build a new model.</li>
+  <li>Stand-alone: AllItemSimilarities and AllRecommendations programs now require an --outFile parameter
+  instead of printing to stdout. Their output format has changed as well, to match the output of the
+  Comptuation Layer. See the javadoc.</li>
+</ul>
+
+<h2>Version 0.11</h2>
+
+<h3>All</h3>
+
+<ul>
+  <li>The default value of <code>model.als.alpha</code> has changed from 40 to 1. This affects results if the model
+  build process (Computation Layer or stand-alone Serving Layer) does not specify a fixed value for this 
+  system property. The new default should result in an improvement in quality for many data sets.</li>
+  <li>Handling of user-item pairs with negative strength values has changed. This has no effect for data sets that 
+  contain no negative strength values. It should have a small and generally positive effect on other data sets.</li>
+</ul>
+
+<h3>Serving Layer</h3>
+
+<ul>
+  <li>The behavior of <code>IDRescorer</code> has slightly changed for <code>recommendToMany</code>. The function
+  is applied once per item, not for every user and for every item. That is, it is applied after the average over
+  user scores has been taken, not before.</li>
+</ul>
+
+<h3>Computation Layer</h3>
+
+<ul>
+  <li>Computation Layer <code>model.cluster.k</code> parameter has been split into <code>model.cluster.user.k</code>
+  and <code>model.cluster.item.k</code> to control k for user and item clustering, respectively. If using the
+  old parameter, specify one (or both) new paramters now instead.</li>
+  <li>Note that the Computation Layer will now delete old generations, keeping 10 generations by default</li>
+</ul>
+
+<h2>Version 0.10</h2>
+
+<h3>All</h3>
+
+<ul>
+  <li>The <code>model.iterations</code> parameter no longer has effect; iteration count is no longer explicitly
+    specified, but instead determined dynamically by a convergence criterion: the average absolute difference
+    in estimates for user-item pairs between iterations. The <code>model.als.iterations.convergenceThreshold</code>
+    parameter, which defaults to 0.001, will generally cause significantly more iterations to be run. Increase
+    (to 0.01 for example) for fewer iterations. The number of iterations can be capped by setting 
+    <code>model.iterations.max</code> to the (positive) max number of iterations to run.</li>
+</ul>
+
+<h3>Computation Layer</h3>
+
+<ul>
+  <li>An issue has been resolved that could cause two Computation Layer computations sharing the same bucket 
+    to interfere. As part of this, support files that were previously bucket-specific, and were previously 
+    placed in <code>sys/</code> under a bucket, like <code>keystore.ks</code>, <code>clientthread.jar</code> 
+    and <code>rescorer.jar</code>, are now instance-specific. They should now be placed in 
+    <em>instance</em><code>/sys/</code>. Stop the Computation Layer instance(s), and for each bucket, copy its
+    <code>sys/</code> directory into each <em>instance/</em> subdirectory. Restart the Comptutation Layer(s).
+    Note that the file <code>sys/myrrix.jar</code>, will be regenerated. No migration is needed if none
+    of the files listed above are used.</li>
+</ul>
+
+</body>
+</html>
